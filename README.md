@@ -1,0 +1,2 @@
+# socksub
+Websocket event subscription
