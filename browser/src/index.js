@@ -7,7 +7,7 @@ function createPromise(fnc){
 	return new Promise(function(resolve, reject){
 		fnc(function(err, result){
 			if(err){
-				reject(err);
+				reject(new Error(err));
 			}else{
 				resolve(result);
 			}
@@ -45,7 +45,7 @@ function wrapSocket(socket){
 				socket.emit('subscribe', topic, callback);
 			})['catch'](function(err){
 				delete subscriptions[topic];
-				throw new Error(err);
+				throw err;
 			});
 		}
 		return subscriptions[topic];
@@ -58,7 +58,7 @@ function wrapSocket(socket){
 			socket.emit('unsubscribe', topic, callback);
 		})['catch'](function(err){
 			subscriptions[topic] = subscribePromise;
-			throw new Error(err);
+			throw err;
 		});
 	};
 	
@@ -88,14 +88,8 @@ function wrapSocket(socket){
 	
 	socksub.rpc = function(method){
 		var args = slice.call(arguments, 1);
-		return new Promise(function(resolve, reject){
-			socket.emit('rpc', method, args, function(err, result){
-				if(err){
-					reject(err);
-				}else{
-					resolve(result);
-				}
-			});
+		return createPromise(function(callback){
+			socket.emit('rpc', method, args, callback);
 		});
 	};
 	
