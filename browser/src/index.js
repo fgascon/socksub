@@ -80,10 +80,23 @@ function wrapSocket(socket){
 			if(EventEmitter.listenerCount(events, topic) === 0){
 				return socksub.unsubscribe(topic);
 			}else{
-				return Q();
+				return Promise.resolve();
 			}
 		}
 		return socksub;
+	};
+	
+	socksub.rpc = function(method){
+		var args = slice.call(arguments, 1);
+		return new Promise(function(resolve, reject){
+			socket.emit('rpc', method, args, function(err, result){
+				if(err){
+					reject(err);
+				}else{
+					resolve(result);
+				}
+			});
+		});
 	};
 	
 	return socksub;
