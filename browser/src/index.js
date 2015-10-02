@@ -1,49 +1,13 @@
-var EventEmitter = require('events').EventEmitter;
-var util = require('util');
 
-function Client(){
-	EventEmitter.call(this);
-	this.logged = false;
-	this.buffer = [];
+function Client(actionHandler){
+	if(typeof actionHandler !== 'function'){
+		throw new Error("Action handler is required");
+	}
+	this.action = actionHandler;
 }
 
-util.inherits(Client, EventEmitter);
 module.exports = Client;
 var proto = Client.prototype;
-
-proto.action = function action(payload, callback){
-	if(this.logged){
-		this.emit('action', payload, callback);
-	}else{
-		this.buffer.push([payload, callback]);
-	}
-};
-
-proto.flush = function flush(){
-	if(!this.logged){
-		return;
-	}
-	var buffer = this.buffer;
-	this.buffer = [];
-	for(var i = 0; i < buffer.length; i++){
-		this.emit('action', buffer[i][0], buffer[i][1]);
-	}
-};
-
-proto.login = function login(credentials){
-	var self = this;
-	this.emit('action', {
-		type: 'login',
-		cred: credentials
-	}, function(err){
-		if(err){
-			self.emit('error', err);
-		}else{
-			self.logged = true;
-			self.flush();
-		}
-	});
-};
 
 proto.request = function request(method, args, callback){
 	this.action({

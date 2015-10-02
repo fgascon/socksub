@@ -28,3 +28,5 @@ node_modules
 
 browser/dist
 test
+.project
+
