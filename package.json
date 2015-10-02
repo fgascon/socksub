@@ -1,6 +1,6 @@
 {
   "name": "socksub",
-  "version": "4.0.0",
+  "version": "5.0.0",
   "description": "Websocket event subscription",
   "main": "lib/server.js",
   "browser": "browser/src/index.js",
